@@ -67,7 +67,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @include('admin::form.error')
         <div class="controls">
-            <button class="btn btn-info" id="select-elfinder-file" type="button">选择文件</button>
+            <button class="btn btn-info select-elfinder-file" id="select-{{$column}}-elfinder-file" type="button">选择文件</button>
         </div>
         <input type="hidden" name="{{$column}}" id="media-{{$column}}" value="{{old($column, $value)}}">
         <div id="preview-{{$column}}"></div>
@@ -76,21 +76,26 @@
 </div>
 
 <script>
-    function openwindow(url,name,iWidth,iHeight)
-    {
-        var iTop = (window.screen.height-30-iHeight)/2; //获得窗口的垂直位置;
-        var iLeft = (window.screen.width-10-iWidth)/2; //获得窗口的水平位置;
-        window.open(url,name,'height='+iHeight+',,innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no');
-    }
 
-    function processSelectedFile(file ,id){
-        $("#media-{{$column}}").val(file)
-        $('#preview-{{$column}}').html(preview(file));
+    if(typeof openwindow == 'undefined'){
+        function openwindow(url,name,iWidth,iHeight)
+        {
+            var iTop = (window.screen.height-30-iHeight)/2; //获得窗口的垂直位置;
+            var iLeft = (window.screen.width-10-iWidth)/2; //获得窗口的水平位置;
+            window.open(url,name,'height='+iHeight+',,innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no');
+        }
     }
-
-    function preview(url) {
-        var html= '<span class="file-icon has-img col-sm-2"><img src="{{$baseURL}}/storage/' + url + '" alt="Attachment" \/><\/span>';
-        return html
+    if(typeof processSelectedFile == 'undefined') {
+        function processSelectedFile(file, id) {
+            $("#media-" + id).val(file)
+            $('#preview-' + id).html(preview(file));
+        }
+    }
+    if(typeof preview == 'undefined') {
+        function preview(url) {
+            var html = '<span class="file-icon has-img col-sm-2"><img src="{{$baseURL}}/storage/' + url + '" alt="Attachment" \/><\/span>';
+            return html
+        }
     }
 
     (function() {
@@ -99,7 +104,7 @@
             $('#preview-{{$column}}').html(preview($('#media-{{$column}}').val()));
         }
 
-        $("#select-elfinder-file").on('click',function(event){
+        $("#select-{{$column}}-elfinder-file").on('click',function(event){
             event.preventDefault();
             var elfinderUrl= "/elfinder/popup/{{$column}}";
             openwindow(elfinderUrl ,'选择文件' ,850 ,450);

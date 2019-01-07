@@ -4,6 +4,10 @@ namespace Touge\LocalFileBrowser;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class LocalFileBrowserServiceProvider
+ * @package Touge\LocalFileBrowser
+ */
 class LocalFileBrowserServiceProvider extends ServiceProvider
 {
     /**
