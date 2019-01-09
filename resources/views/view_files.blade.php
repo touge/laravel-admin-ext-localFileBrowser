@@ -8,7 +8,7 @@
         position: relative;
     }
 
-    .files>li>.file-select {
+    .files > li > .file-select {
         position: absolute;
         top: -4px;
         left: -1px;
@@ -53,61 +53,70 @@
         padding: 0;
     }
 
-    .file-icon.has-img>img {
+    .file-icon.has-img > img {
         max-width: 100%;
         height: auto;
         max-height: 92px;
     }
 
 </style>
+@php
+    $hidden_input_name = $column;
+    if($attributes){
+        $attributes = str_replace("\"","",$attributes);
+        parse_str($attributes ,$_attributes);
+        if(array_key_exists('column',$_attributes)){
+            $hidden_input_name= $_attributes['column'] . "[{$column}]";
+        }
+        $id = $_attributes['column'] . '-' . $id;
+    }
+@endphp
 <div class="form-group {!! !$errors->has($label) ?: 'has-error' !!}">
-
     <label for="{{$id}}" class="col-sm-2 control-label">{{$label}}</label>
     <div class="col-sm-8">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @include('admin::form.error')
         <div class="controls">
-            <button class="btn btn-info select-elfinder-file" id="select-{{$column}}-elfinder-file" type="button">选择文件</button>
+            <button class="btn btn-info select-elfinder-file" id="select-{{$id}}-elfinder-file" type="button">选择文件
+            </button>
         </div>
-        <input type="hidden" name="{{$column}}" id="media-{{$column}}" value="{{old($column, $value)}}">
-        <div id="preview-{{$column}}"></div>
+        <input type="hidden" name="{{$hidden_input_name}}" id="media-{{$id}}" value="{{old($column, $value)}}">
+        <div id="preview-{{$id}}"></div>
         @include('admin::form.help-block')
     </div>
 </div>
 
 <script>
-
-    if(typeof openwindow == 'undefined'){
-        function openwindow(url,name,iWidth,iHeight)
-        {
-            var iTop = (window.screen.height-30-iHeight)/2; //获得窗口的垂直位置;
-            var iLeft = (window.screen.width-10-iWidth)/2; //获得窗口的水平位置;
-            window.open(url,name,'height='+iHeight+',,innerHeight='+iHeight+',width='+iWidth+',innerWidth='+iWidth+',top='+iTop+',left='+iLeft+',toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no');
+    if (typeof openwindow == 'undefined') {
+        function openwindow(url, name, iWidth, iHeight) {
+            var iTop = (window.screen.height - 30 - iHeight) / 2; //获得窗口的垂直位置;
+            var iLeft = (window.screen.width - 10 - iWidth) / 2; //获得窗口的水平位置;
+            window.open(url, name, 'height=' + iHeight + ',,innerHeight=' + iHeight + ',width=' + iWidth + ',innerWidth=' + iWidth + ',top=' + iTop + ',left=' + iLeft + ',toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no');
         }
     }
-    if(typeof processSelectedFile == 'undefined') {
+    if (typeof processSelectedFile == 'undefined') {
         function processSelectedFile(file, id) {
             $("#media-" + id).val(file)
             $('#preview-' + id).html(preview(file));
         }
     }
-    if(typeof preview == 'undefined') {
+    if (typeof preview == 'undefined') {
         function preview(url) {
             var html = '<span class="file-icon has-img col-sm-2"><img src="{{$baseURL}}/storage/' + url + '" alt="Attachment" \/><\/span>';
             return html
         }
     }
 
-    (function() {
-        var _meida_val= $('#media-{{$column}}').val()
-        if ($('#media-{{$column}}').val()) {
-            $('#preview-{{$column}}').html(preview($('#media-{{$column}}').val()));
+    (function () {
+        var _meida_val = $('#media-{{$id}}').val()
+        if (_meida_val) {
+            $('#preview-{{$id}}').html(preview(_meida_val));
         }
 
-        $("#select-{{$column}}-elfinder-file").on('click',function(event){
+        $("#select-{{$id}}-elfinder-file").on('click', function (event) {
             event.preventDefault();
-            var elfinderUrl= "/elfinder/popup/{{$column}}";
-            openwindow(elfinderUrl ,'选择文件' ,850 ,450);
+            var elfinderUrl = "/elfinder/popup/{{$id}}";
+            openwindow(elfinderUrl, '选择文件', 850, 450);
         });
     }())
 </script>
